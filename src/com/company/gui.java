@@ -15,14 +15,44 @@ public class HangedMan extends WindowAdapter implements ActionListener {
     int randomNum;
     int arrLen;
     int stringLen;
+    int level;
+    int score;
+    JLabel scoreLabel;
+    JLabel levelLabel;
 
     public HangedMan() {
         frame.setSize(500,400);
         pic = new JLabel();
+        pic.setBounds(10, 10, 500, 218);
         initVars();
+        level = 1;
+        score = 0;
 
-        JButton button =new JButton("Click Here");
+        JButton changeLevel = new JButton("Change Level");
+        changeLevel.setBounds(360,330,120,30);
+        scoreLabel = new JLabel();
+        scoreLabel.setBounds(230,0,150,20);
+        levelLabel = new JLabel();
+        levelLabel.setBounds(432,0,150,20);
+        frame.add(levelLabel);
+        frame.add(scoreLabel);
+        frame.add(changeLevel);
+        JButton quitButton = new JButton("Quit");
+        quitButton.setBounds(5,330,60,30);
+        quitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int a=JOptionPane.showConfirmDialog(frame,"Do you want to Quit");
+                if (a == JOptionPane.YES_OPTION) {
+                    JOptionPane.showMessageDialog(frame, "Your Final Score Was " + score);
+                    System.exit(0);
+                }
+            }
+        });
+        frame.add(quitButton);
+
         input = new JTextField();
+        JButton button =new JButton("Continue");
         JLabel output = new JLabel("Enter a character: ");
         output.setBounds(120,270,150,30);
         input.setBounds(235,270,30,30);
@@ -31,7 +61,33 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         frame.add(input);
         frame.add(output);
         frame.setLayout(null);
+        frame.setResizable(false);
         frame.setVisible(true);
+
+        changeLevel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String inputLevel = JOptionPane.showInputDialog(null, "Enter a level of between 1 and 8.");
+                int levelInput = 0;
+                try {
+                    levelInput = Integer.parseInt(inputLevel);
+                } catch (NumberFormatException i) {
+                    levelInput = level;
+                }
+                level = levelInput;
+                if (level > 8) {
+                    level = 8;
+                }
+                else if (level < 1) {
+                    level = 1;
+                }
+                displayImage(j);
+
+//                System.out.println(levelInput); // debug
+
+
+            }
+        });
 
         displayImage(j);
         JOptionPane.showMessageDialog(frame, "Welcome to Hanged Man! Hope you have FUN.");
@@ -39,6 +95,7 @@ public class HangedMan extends WindowAdapter implements ActionListener {
     }
 
     public void initVars() {
+        j = 0;
         rand = Math.random();
         arrLen = array.length;
         randomNum = ((int) (rand * 1000)) % arrLen;
@@ -92,14 +149,9 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         String randomWordLower = randomWord.toLowerCase();
 
         if (randomWordLower.equals(progress.toLowerCase())) {
-            JOptionPane.showMessageDialog(frame, "Looks like you have managed to survive this Round.");
-            int a=JOptionPane.showConfirmDialog(frame,"Do you want to play another Round???");
-            if(a==JOptionPane.NO_OPTION){
-                System.exit(0);
-            }
-            else if (a == JOptionPane.YES_OPTION) {
-                initVars();
-            }
+            score = (level * 10 )+ ((level * level * level) * 2);
+            initVars();
+            displayImage(j);
         }
 
         if (check == 0) {
@@ -113,10 +165,12 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         String imgPath = "src/img/img" + j + ".png";
         ImageIcon img = new ImageIcon(imgPath);
         pic.setIcon(img);
-        System.out.println(progress);
+//        System.out.println(progress); // debug
         progress = progress.substring(0, 1).toUpperCase() + progress.substring(1);
         pic.setText("Your Progress: " + progress);
-        pic.setBounds(10, 10, 500, 218);
+
+        scoreLabel.setText("Score: " + score);
+        levelLabel.setText("Level: " + level);
         frame.add(pic);
     }
 
