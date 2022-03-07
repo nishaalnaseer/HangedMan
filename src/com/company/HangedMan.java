@@ -4,6 +4,13 @@ import java.awt.event.*;
 import java.util.Arrays;
 import java.io.*;
 
+// cypher for decrpting (aes)
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+import java.util.Base64;
+
 public class HangedMan extends WindowAdapter implements ActionListener {
     JFrame frame = new JFrame("Hanged Man");
     JLabel pic;
@@ -22,6 +29,11 @@ public class HangedMan extends WindowAdapter implements ActionListener {
     JLabel scoreLabel;
     JLabel levelLabel;
     String [][] nestedList;
+
+//    private SecretKey key;
+//    private final int KEY_SIZE = 128;
+//    private final int DATA_LENGTH = 128;
+//    private Cipher encryptionCipher;
 
     public HangedMan(String[][] list) {
         nestedList = list;
@@ -157,7 +169,7 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         String randomWordLower = randomWord.toLowerCase();
 
         if (randomWordLower.equals(progress.toLowerCase())) {
-            score = (level * 10 )+ ((level * level * level) * 2);
+            score = (stringLen * 10 )+ ((stringLen * stringLen * stringLen) * 2);
             initVars();
             displayImage(j);
         }
@@ -182,6 +194,25 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         frame.add(pic);
     }
 
+//    public void init() throws Exception {
+//        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+//        keyGenerator.init(KEY_SIZE);
+//        key = keyGenerator.generateKey();
+//    }
+
+    public static String decrypt(String encryptedData) throws Exception {
+        byte[] dataInBytes = Base64.getDecoder().decode(encryptedData);
+
+        Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
+        encryptionCipher.init(Cipher.ENCRYPT_MODE, key);
+
+        Cipher decryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
+        GCMParameterSpec spec = new GCMParameterSpec(128, encryptionCipher.getIV());
+        decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
+        byte[] decryptedBytes = decryptionCipher.doFinal(dataInBytes);
+        return new String(decryptedBytes);
+    }
+
     public static void main(String[] args) throws Exception {
 
         // File path is passed as parameter
@@ -194,6 +225,9 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         // Declaring a string variable
         String st;
         st = br.readLine();
+
+        // decrypt
+        st = decrypt(st);
 
 //        st = "hello,there,"; // test
         int stringLenght = st.length();
