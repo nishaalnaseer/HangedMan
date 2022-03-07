@@ -200,18 +200,18 @@ public class HangedMan extends WindowAdapter implements ActionListener {
 //        key = keyGenerator.generateKey();
 //    }
 
-    public static String decrypt(String encryptedData) throws Exception {
-        byte[] dataInBytes = Base64.getDecoder().decode(encryptedData);
-
-        Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
-        encryptionCipher.init(Cipher.ENCRYPT_MODE, key);
-
-        Cipher decryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
-        GCMParameterSpec spec = new GCMParameterSpec(128, encryptionCipher.getIV());
-        decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
-        byte[] decryptedBytes = decryptionCipher.doFinal(dataInBytes);
-        return new String(decryptedBytes);
-    }
+//    public static String decrypt(String encryptedData) throws Exception {
+//        byte[] dataInBytes = Base64.getDecoder().decode(encryptedData);
+//
+//        Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
+//        encryptionCipher.init(Cipher.ENCRYPT_MODE, key);
+//
+//        Cipher decryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
+//        GCMParameterSpec spec = new GCMParameterSpec(128, encryptionCipher.getIV());
+//        decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
+//        byte[] decryptedBytes = decryptionCipher.doFinal(dataInBytes);
+//        return new String(decryptedBytes);
+//    }
 
     public static void main(String[] args) throws Exception {
 
@@ -227,7 +227,7 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         st = br.readLine();
 
         // decrypt
-        st = decrypt(st);
+//        st = decrypt(st);
 
 //        st = "hello,there,"; // test
         int stringLenght = st.length();

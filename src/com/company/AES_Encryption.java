@@ -4,6 +4,9 @@ import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.util.Base64;
 
 public class AES_Encryption {
@@ -14,10 +17,28 @@ public class AES_Encryption {
     String inp = "src/nkdaklw";
     String out = "src/words.txt";
 
+    public AES_Encryption() {
+        try {
+
+            File file = new File("src/nkdaklw");
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String string = br.readLine();
+
+            init();
+            String encryptedData = encrypt(string);
+            String decryptedData = decrypt(encryptedData);
+
+            System.out.println("Encrypted Data : " + encryptedData.length());
+            System.out.println("Decrypted Data : " + decryptedData.length());
+            System.out.println(key);
+
+        } catch (Exception ignored) {
+        }
+    }
+
     public void init() throws Exception {
         KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
         keyGenerator.init(KEY_SIZE);
-        System.out.println(key);
         key = keyGenerator.generateKey();
     }
 
@@ -46,17 +67,8 @@ public class AES_Encryption {
         return Base64.getDecoder().decode(data);
     }
 
-    static void main(String[] args) {
-        try {
-            AES_Encryption aes_encryption = new AES_Encryption();
-            aes_encryption.init();
-            String encryptedData = aes_encryption.encrypt("Hello, welcome to the encryption world");
-            String decryptedData = aes_encryption.decrypt(encryptedData);
-
-            System.out.println("Encrypted Data : " + encryptedData);
-            System.out.println("Decrypted Data : " + decryptedData);
-        } catch (Exception ignored) {
-        }
+    public static void main(String[] args) {
+        AES_Encryption aes_encryption = new AES_Encryption();
 
     }
 }
