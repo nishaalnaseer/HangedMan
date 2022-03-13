@@ -1,5 +1,6 @@
 package com.company;
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.*;
 import java.util.Arrays;
 import java.io.*;
@@ -19,7 +20,7 @@ public class HangedMan extends WindowAdapter implements ActionListener {
     String randomWord;
     char[] chars;
     JTextField  input;
-//    String[] array = {"Kick", "Stupid", "Dumb"};
+    //    String[] array = {"Kick", "Stupid", "Dumb"};
     double rand;
     int randomNum;
     int arrLen;
@@ -29,6 +30,7 @@ public class HangedMan extends WindowAdapter implements ActionListener {
     JLabel scoreLabel;
     JLabel levelLabel;
     String [][] nestedList;
+    boolean debug = false;
 
 //    private SecretKey key;
 //    private final int KEY_SIZE = 128;
@@ -50,8 +52,10 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         levelLabel = new JLabel();
         levelLabel.setBounds(432,0,150,20);
         frame.add(levelLabel);
+        pic.setFont(new Font("Serif", Font.BOLD, 20));
         frame.add(scoreLabel);
         frame.add(changeLevel);
+//        frame.setIc
         JButton quitButton = new JButton("Quit");
         quitButton.setBounds(5,330,60,30);
         quitButton.addActionListener(new ActionListener() {
@@ -122,6 +126,16 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         chars = new char[stringLen];
         Arrays.fill(chars, '-');
         progress = new String(chars);
+
+        rand = Math.random();
+        int randomIntForRaiiKokko = (int) ((rand * 1000) % stringLen);
+        char randomCharForNoobs = randomWord.charAt(randomIntForRaiiKokko);
+        progress = progress.substring(0, randomIntForRaiiKokko) +
+                randomCharForNoobs + progress.substring(randomIntForRaiiKokko + 1);
+
+        if (debug) {
+            JOptionPane.showMessageDialog(frame, "word is " + randomWord);
+        }
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -169,7 +183,7 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         String randomWordLower = randomWord.toLowerCase();
 
         if (randomWordLower.equals(progress.toLowerCase())) {
-            score = (stringLen * 10 )+ ((stringLen * stringLen * stringLen) * 2);
+            score += (stringLen * 10 )+ ((stringLen * stringLen * stringLen) * 2);
             initVars();
             displayImage(j);
         }
@@ -362,7 +376,5 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         String[][] list = new String[][] {one, two, three, four, five, six, seven, nine, eight, nine, ten, eleven};
 //        System.out.println(list[0].length); // debug
         HangedMan obj = new HangedMan(list);
-
-
     }
 }
