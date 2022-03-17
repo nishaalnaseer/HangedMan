@@ -1,15 +1,12 @@
-package com.company;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Arrays;
-import java.io.*;
-
-// cypher for decrpting (aes)
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import javax.swing.*;
+import java.awt.event.*;
+import java.util.Arrays;
+import java.io.*;
 import java.util.Base64;
 
 public class HangedMan extends WindowAdapter implements ActionListener {
@@ -20,214 +17,29 @@ public class HangedMan extends WindowAdapter implements ActionListener {
     String randomWord;
     char[] chars;
     JTextField  input;
-    //    String[] array = {"Kick", "Stupid", "Dumb"};
-    double rand;
-    int randomNum;
-    int arrLen;
+//    String[] array = {"Kick", "Stupid", "Dumb"};
+//    double rand;
+//    int randomNum;
+//    int arrLen;
     int stringLen;
     int level = 1;
     int score;
     JLabel scoreLabel;
     JLabel levelLabel;
     String [][] nestedList;
+    JLabel trackerLabel;
+    String tracker = "Letters entered: ";
+
+    private SecretKey key;
+    private final int KEY_SIZE = 128;
+    private final int DATA_LENGTH = 128;
+    private Cipher encryptionCipher;
+
     boolean debug = false;
+//    boolean debug = true;
 
-//    private SecretKey key;
-//    private final int KEY_SIZE = 128;
-//    private final int DATA_LENGTH = 128;
-//    private Cipher encryptionCipher;
+    public HangedMan() throws Exception {
 
-    public HangedMan(String[][] list) {
-        nestedList = list;
-        frame.setSize(500,400);
-        pic = new JLabel();
-        pic.setBounds(10, 10, 500, 218);
-        initVars();
-        score = 0;
-
-        JButton changeLevel = new JButton("Change Level");
-        changeLevel.setBounds(360,330,120,30);
-        scoreLabel = new JLabel();
-        scoreLabel.setBounds(230,0,150,20);
-        levelLabel = new JLabel();
-        levelLabel.setBounds(432,0,150,20);
-        frame.add(levelLabel);
-        pic.setFont(new Font("Serif", Font.BOLD, 20));
-        frame.add(scoreLabel);
-        frame.add(changeLevel);
-//        frame.setIc
-        JButton quitButton = new JButton("Quit");
-        quitButton.setBounds(5,330,60,30);
-        quitButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int a=JOptionPane.showConfirmDialog(frame,"Do you want to Quit");
-                if (a == JOptionPane.YES_OPTION) {
-                    JOptionPane.showMessageDialog(frame, "Your Final Score Was " + score);
-                    System.exit(0);
-                }
-            }
-        });
-        frame.add(quitButton);
-
-        input = new JTextField();
-        JButton button =new JButton("Continue");
-        JLabel output = new JLabel("Enter a character: ");
-        output.setBounds(120,270,150,30);
-        input.setBounds(235,270,30,30);
-        button.setBounds(203,300,95,30);
-        frame.add(button);
-        frame.add(input);
-        frame.add(output);
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-
-        changeLevel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String inputLevel = JOptionPane.showInputDialog(null, "Enter a level of between 1 and 11.");
-                int levelInput = 0;
-                try {
-                    levelInput = Integer.parseInt(inputLevel);
-                } catch (NumberFormatException i) {
-                    levelInput = level;
-                }
-                level = levelInput;
-                if (level > 11) {
-                    level = 11;
-                }
-                else if (level < 1) {
-                    level = 1;
-                }
-                displayImage(j);
-
-//                System.out.println(levelInput); // debug
-
-
-            }
-        });
-
-        displayImage(j);
-        JOptionPane.showMessageDialog(frame, "Welcome to Hanged Man! Hope you have FUN.");
-        button.addActionListener(this);
-    }
-
-    public void initVars() {
-        j = 0;
-        int i = level - 1;
-//        System.out.println(nestedList.length + " " + level); // debug
-        String[] array = nestedList[i];
-        rand = Math.random();
-        arrLen = array.length; //
-        randomNum = ((int) (rand * 1000)) % arrLen;
-        randomWord = array[randomNum];
-        stringLen = randomWord.length();
-        chars = new char[stringLen];
-        Arrays.fill(chars, '-');
-        progress = new String(chars);
-
-        rand = Math.random();
-        int randomIntForRaiiKokko = (int) ((rand * 1000) % stringLen);
-        char randomCharForNoobs = randomWord.charAt(randomIntForRaiiKokko);
-        progress = progress.substring(0, randomIntForRaiiKokko) +
-                randomCharForNoobs + progress.substring(randomIntForRaiiKokko + 1);
-
-        if (debug) {
-            JOptionPane.showMessageDialog(frame, "word is " + randomWord);
-        }
-    }
-
-    public void actionPerformed(ActionEvent e) {
-
-        if (j == 6) {
-            displayImage(7);
-            randomWord = randomWord.substring(0, 1).toUpperCase() + randomWord.substring(1);
-            String messege = "The word was '" + randomWord + "' but You let him DIE. Hope you enjoyed it!!!";
-            JOptionPane.showMessageDialog(frame, messege);
-            System.exit(0);
-        }
-        input.requestFocus();
-        String text = input.getText();
-        input.setText("");
-
-        if (text.length() == 0) {
-            text = " ";
-        }
-
-        char ch = text.charAt(0);
-        int stringLen = randomWord.length();
-        char charForComparison;
-
-        int check = 0;
-        int[] positions = new int[20];
-        int x;
-
-        for(x = 0; x < stringLen; x++) {
-            charForComparison = randomWord.charAt(x);
-            charForComparison = Character.toLowerCase(charForComparison);
-
-            if (charForComparison == ch) {
-                check = 1;
-                positions[x] = 1;
-//                JOptionPane.showMessageDialog(frame, ch); // debug
-            }
-        }
-
-        for(x = 0; x < 20; x++) {
-            if (positions[x] == 1) {
-                progress = progress.substring(0, x) + ch + progress.substring(x + 1);
-            }
-        }
-
-        String randomWordLower = randomWord.toLowerCase();
-
-        if (randomWordLower.equals(progress.toLowerCase())) {
-            score += (stringLen * 10 )+ ((stringLen * stringLen * stringLen) * 2);
-            initVars();
-            displayImage(j);
-        }
-
-        if (check == 0) {
-            j++;
-        }
-
-        displayImage(j);
-    }
-
-    public void displayImage(int j) {
-        String imgPath = "src/img/img" + j + ".png";
-        ImageIcon img = new ImageIcon(imgPath);
-        pic.setIcon(img);
-//        System.out.println(progress); // debug
-        progress = progress.substring(0, 1).toUpperCase() + progress.substring(1);
-        pic.setText("Your Progress: " + progress);
-
-        scoreLabel.setText("Score: " + score);
-        levelLabel.setText("Level: " + level);
-        frame.add(pic);
-    }
-
-//    public void init() throws Exception {
-//        KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
-//        keyGenerator.init(KEY_SIZE);
-//        key = keyGenerator.generateKey();
-//    }
-
-//    public static String decrypt(String encryptedData) throws Exception {
-//        byte[] dataInBytes = Base64.getDecoder().decode(encryptedData);
-//
-//        Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
-//        encryptionCipher.init(Cipher.ENCRYPT_MODE, key);
-//
-//        Cipher decryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
-//        GCMParameterSpec spec = new GCMParameterSpec(128, encryptionCipher.getIV());
-//        decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
-//        byte[] decryptedBytes = decryptionCipher.doFinal(dataInBytes);
-//        return new String(decryptedBytes);
-//    }
-
-    public static void main(String[] args) throws Exception {
 
         // File path is passed as parameter
         File file = new File("src/nkdaklw");
@@ -240,10 +52,6 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         String st;
         st = br.readLine();
 
-        // decrypt
-//        st = decrypt(st);
-
-//        st = "hello,there,"; // test
         int stringLenght = st.length();
         String word = "";
         String[] words = new String[95885];
@@ -375,6 +183,207 @@ public class HangedMan extends WindowAdapter implements ActionListener {
 //        System.out.println(st); // debug
         String[][] list = new String[][] {one, two, three, four, five, six, seven, nine, eight, nine, ten, eleven};
 //        System.out.println(list[0].length); // debug
-        HangedMan obj = new HangedMan(list);
+
+        nestedList = list;
+        frame.setSize(500,400);
+        pic = new JLabel();
+        pic.setBounds(10, 10, 500, 218);
+        initVars();
+        score = 0;
+
+        JButton changeLevel = new JButton("Change Level");
+        changeLevel.setBounds(360,330,120,30);
+        scoreLabel = new JLabel();
+        scoreLabel.setBounds(230,0,150,20);
+        levelLabel = new JLabel();
+        levelLabel.setBounds(432,0,150,20);
+        trackerLabel = new JLabel();
+        trackerLabel.setBounds(80,340,200,20);
+        frame.add(trackerLabel);
+        frame.add(levelLabel);
+        frame.add(scoreLabel);
+        frame.add(changeLevel);
+        JButton quitButton = new JButton("Quit");
+        quitButton.setBounds(5,330,60,30);
+        quitButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int a=JOptionPane.showConfirmDialog(frame,"Do you want to Quit");
+                if (a == JOptionPane.YES_OPTION) {
+                    JOptionPane.showMessageDialog(frame, "Your Final Score Was " + score);
+                    System.exit(0);
+                }
+            }
+        });
+        frame.add(quitButton);
+
+        input = new JTextField();
+        JButton button =new JButton("Continue");
+        JLabel output = new JLabel("Enter a character: ");
+        output.setBounds(120,270,150,30);
+        input.setBounds(235,270,30,30);
+        button.setBounds(203,300,95,30);
+        frame.add(button);
+        frame.add(input);
+        frame.add(output);
+        frame.setLayout(null);
+        frame.setResizable(false);
+        frame.setVisible(true);
+
+        changeLevel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String inputLevel = JOptionPane.showInputDialog(null, "Enter a level of between 1 and 11.");
+                int levelInput = 0;
+                try {
+                    levelInput = Integer.parseInt(inputLevel);
+                } catch (NumberFormatException i) {
+                    levelInput = level;
+                }
+                level = levelInput;
+                if (level > 11) {
+                    level = 11;
+                }
+                else if (level < 1) {
+                    level = 1;
+                }
+                displayImage(j);
+
+//                System.out.println(levelInput); // debug
+            }
+        });
+
+        displayImage(j);
+        JOptionPane.showMessageDialog(frame, "Welcome to Hanged Man! Hope you have FUN.");
+        button.addActionListener(this);
+    }
+
+    public void initVars() {
+        j = 0;
+        int i, arrLen, randomNum, x, hints, h;
+//        System.out.println(nestedList.length + " " + level); // debug
+        double rand = Math.random();
+        i = level - 1;
+        String[] array = nestedList[i];
+        arrLen = array.length; //
+        randomNum = ((int) (rand * 1000)) % arrLen;
+        randomWord = array[randomNum];
+        stringLen = randomWord.length();
+        chars = new char[stringLen];
+        Arrays.fill(chars, '-');
+        progress = new String(chars);
+        tracker = "Letters entered: ";
+
+        // give some random hints as letters with their pos in the word
+        if (stringLen < 8) {
+            hints = 1;
+        }
+        else {
+            hints = 2;
+        }
+        int[] prevHints = new int[hints];
+        for (x = 0; x < hints; x++) {
+            while (true) {
+                rand = Math.random();
+                randomNum = (((int) (rand * 100)) % stringLen);
+                int flag = 1;
+
+                for (h = 0; h < hints; h++) {
+                    if (prevHints[h] == randomNum) {
+                        flag = 0;
+                        break;
+                    }
+                }
+
+                if (flag == 1) {
+                    prevHints[x] = randomNum;
+                    randomNum = (((int) (rand * 100)) % stringLen);
+                    char randomChar = randomWord.charAt(randomNum);
+                    progress = progress.substring(0, randomNum) + randomChar + progress.substring(randomNum + 1);
+                    break;
+                }
+            }
+        }
+
+        if (debug ==  true) {
+            JOptionPane.showMessageDialog(frame, "Word: " + randomWord);
+        }
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        input.requestFocus();
+        String text = input.getText();
+        input.setText("");
+
+        if (text.length() == 0) {
+            text = " ";
+        }
+
+        int i, x, check;
+        char charForComparison, ch;
+        int[] positions;
+        for (i = 0; i < text.length(); i++) {
+            ch = text.charAt(i);
+            tracker = tracker + ch + " ";
+
+            check = 0;
+            positions = new int[20];
+
+            for(x = 0; x < stringLen; x++) {
+                charForComparison = randomWord.charAt(x);
+                charForComparison = Character.toLowerCase(charForComparison);
+
+                if (charForComparison == ch) {
+                    check = 1;
+                    positions[x] = 1;
+//                JOptionPane.showMessageDialog(frame, ch); // debug
+                }
+            }
+
+            for(x = 0; x < 20; x++) {
+                if (positions[x] == 1) {
+                    progress = progress.substring(0, x) + ch + progress.substring(x + 1);
+                }
+            }
+
+            if (check == 0) {
+                j++;
+                displayImage(j);
+                if (j == 7) {
+                    randomWord = randomWord.substring(0, 1).toUpperCase() + randomWord.substring(1);
+                    String messege = "The word was '" + randomWord + "' but You let him DIE. Hope you enjoyed it!!!";
+                    JOptionPane.showMessageDialog(frame, messege);
+                    System.exit(1);
+                }
+            }
+            else {
+                displayImage(j);
+            }
+
+            String randomWordLower = randomWord.toLowerCase();
+            if (randomWordLower.equals(progress.toLowerCase())) {
+                score += (stringLen * 10) + ((stringLen * stringLen) * 2);
+                initVars();
+                displayImage(j);
+            }
+        }
+    }
+
+    public void displayImage(int j) {
+        String imgPath = "src/img/img" + j + ".png";
+        ImageIcon img = new ImageIcon(imgPath);
+        pic.setIcon(img);
+//        System.out.println(progress); // debug
+        progress = progress.substring(0, 1).toUpperCase() + progress.substring(1);
+        pic.setText("Your Progress: " + progress);
+
+        scoreLabel.setText("Score: " + score);
+        levelLabel.setText("Level: " + level);
+        trackerLabel.setText(tracker);
+        frame.add(pic);
+    }
+
+    public static void main(String[] args) throws Exception {
+        HangedMan obj = new HangedMan();
     }
 }
