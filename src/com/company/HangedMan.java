@@ -387,3 +387,4 @@ public class HangedMan extends WindowAdapter implements ActionListener {
         HangedMan obj = new HangedMan();
     }
 }
+
